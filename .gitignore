@@ -1,0 +1,8 @@
+# Generic
+handler.zip
+
+# Terraform
+.terraform/
+plan
+*.backup
+*.tfstate
