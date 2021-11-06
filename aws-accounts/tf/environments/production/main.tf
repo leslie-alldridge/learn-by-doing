@@ -10,16 +10,10 @@ provider "aws" {
 
 locals {
   environment  = "production"
-  service_name = "api_gateway_lambda_example"
+  service_name = "aws_accounts_${local.environment}"
 }
 
-module "lambda" {
-  source = "../../modules/lambda"
+module "iam" {
+  source = "../../modules/iam"
   name   = local.service_name
-}
-
-module "api_gateway" {
-  source      = "../../modules/api_gateway"
-  name        = local.service_name
-  environment = local.environment
 }
