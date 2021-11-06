@@ -1,3 +1,11 @@
+terraform {
+  backend "s3" {
+    bucket = "tf-state-production"
+    key    = "terraform-projects/api-gateway-lambda/state"
+    region = "ap-southeast-2"
+  }
+}
+
 provider "aws" {
   region = "ap-southeast-2"
   default_tags {
