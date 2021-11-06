@@ -25,6 +25,7 @@ Engineering skills.
 
 ```shell
 .
+├── aws-accounts
 ├── terraform-projects
 │   ├── api-gateway-lambda
 ├── placeholder
