@@ -23,6 +23,7 @@ Engineering skills.
 
 ## Current Projects
 
+```shell
 .
 ├── terraform-projects
 │   ├── api-gateway-lambda
@@ -30,3 +31,4 @@ Engineering skills.
 │   ├── footer.html
 │   └── header.html
 └── README.md
+```
