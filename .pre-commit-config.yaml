@@ -1,0 +1,7 @@
+repos:
+  - repo: https://github.com/jumanjihouse/pre-commit-hooks
+    rev: 2.1.5
+    hooks:
+      - id: markdownlint
+        name: Check markdown files
+        description: Check markdown files and flag style issues
