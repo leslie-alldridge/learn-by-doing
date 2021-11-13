@@ -28,6 +28,7 @@ module "lambda" {
 
 module "api_gateway" {
   source      = "../../modules/api_gateway"
-  name        = local.service_name
   environment = local.environment
+  invoke_arn  = module.lambda.invoke_arn
+  name        = local.service_name
 }

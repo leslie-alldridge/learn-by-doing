@@ -6,6 +6,8 @@ terraform {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
 // The api gateway itself
 resource "aws_api_gateway_rest_api" "api_gateway" {
   name        = var.name
@@ -16,10 +18,10 @@ resource "aws_api_gateway_rest_api" "api_gateway" {
   }
 }
 
-// Create a path named "resource"
+// Create a path named "transactions"
 resource "aws_api_gateway_resource" "api_gateway" {
   parent_id   = aws_api_gateway_rest_api.api_gateway.root_resource_id
-  path_part   = "resource"
+  path_part   = "transactions"
   rest_api_id = aws_api_gateway_rest_api.api_gateway.id
 }
 
@@ -35,10 +37,13 @@ resource "aws_api_gateway_method" "api_gateway" {
 // We integrate with mock (could be S3, Lambda, etc)
 // "Integration Request" box
 resource "aws_api_gateway_integration" "api_gateway" {
-  http_method = aws_api_gateway_method.api_gateway.http_method
-  resource_id = aws_api_gateway_resource.api_gateway.id
-  rest_api_id = aws_api_gateway_rest_api.api_gateway.id
-  type        = "MOCK"
+  http_method             = aws_api_gateway_method.api_gateway.http_method
+  resource_id             = aws_api_gateway_resource.api_gateway.id
+  rest_api_id             = aws_api_gateway_rest_api.api_gateway.id
+  type                    = "AWS_PROXY"
+  integration_http_method = "POST"
+  uri                     = var.invoke_arn
+
   request_templates = {
     "application/json" = jsonencode(
       {
@@ -46,6 +51,16 @@ resource "aws_api_gateway_integration" "api_gateway" {
       }
     )
   }
+}
+
+// Lambda permissions
+resource "aws_lambda_permission" "apigw_lambda" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = var.name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "arn:aws:execute-api:ap-southeast-2:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api_gateway.id}/*/${aws_api_gateway_method.api_gateway.http_method}${aws_api_gateway_resource.api_gateway.path}"
 }
 
 // Our integration response
@@ -71,7 +86,14 @@ resource "aws_api_gateway_deployment" "api_gateway" {
   rest_api_id = aws_api_gateway_rest_api.api_gateway.id
 
   triggers = {
-    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.api_gateway.body))
+    deployment = sha1(join(",", [
+      jsonencode(aws_api_gateway_integration.api_gateway),
+      jsonencode(aws_api_gateway_integration_response.api_gateway),
+      jsonencode(aws_api_gateway_method_response.response_200),
+      jsonencode(aws_api_gateway_method.api_gateway),
+      jsonencode(aws_api_gateway_resource.api_gateway),
+      jsonencode(aws_api_gateway_rest_api.api_gateway)
+    ]))
   }
 
   lifecycle {
@@ -93,4 +115,15 @@ data "aws_iam_role" "cloudwatch" {
 
 resource "aws_api_gateway_account" "api_gateway" {
   cloudwatch_role_arn = data.aws_iam_role.cloudwatch.arn
+}
+
+resource "aws_api_gateway_method_settings" "all" {
+  rest_api_id = aws_api_gateway_rest_api.api_gateway.id
+  stage_name  = aws_api_gateway_stage.api_gateway.stage_name
+  method_path = "*/*"
+
+  settings {
+    metrics_enabled = false
+    logging_level   = "INFO"
+  }
 }
