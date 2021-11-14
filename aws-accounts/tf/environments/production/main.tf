@@ -21,15 +21,25 @@ locals {
   service_name = "aws_accounts_${local.environment}"
 }
 
-module "iam" {
-  source = "../../modules/iam"
-  name   = local.service_name
-}
-
 module "bucket_tf_state" {
   source     = "../../modules/s3_bucket"
+
   name       = "tf-state-${local.environment}"
   acl        = "private"
   region     = "ap-southeast-2"
   versioning = true
+}
+
+module "ecr" {
+  source = "../../modules/ecr"
+
+  name = "default-ecr-${local.environment}"
+  mutability = "MUTABLE"
+  scan = true
+}
+
+module "iam" {
+  source = "../../modules/iam"
+
+  name   = local.service_name
 }
