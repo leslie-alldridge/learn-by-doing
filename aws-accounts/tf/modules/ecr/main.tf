@@ -1,8 +1,10 @@
-resource "aws_ecr_repository" "repository" {
-  name                 = var.name
-  image_tag_mutability = var.mutability
+// Commented out to save 2 cents a month...
 
-  image_scanning_configuration {
-    scan_on_push = var.scan
-  }
-}
+# resource "aws_ecr_repository" "repository" {
+#   name                 = var.name
+#   image_tag_mutability = var.mutability
+
+#   image_scanning_configuration {
+#     scan_on_push = var.scan
+#   }
+# }

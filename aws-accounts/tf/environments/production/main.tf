@@ -22,24 +22,24 @@ locals {
 }
 
 module "bucket_tf_state" {
-  source     = "../../modules/s3_bucket"
+  source = "../../modules/s3_bucket"
 
   name       = "tf-state-${local.environment}"
   acl        = "private"
   region     = "ap-southeast-2"
-  versioning = true
+  versioning = "Enabled"
 }
 
 module "ecr" {
   source = "../../modules/ecr"
 
-  name = "default-ecr-${local.environment}"
+  name       = "default-ecr-${local.environment}"
   mutability = "MUTABLE"
-  scan = true
+  scan       = true
 }
 
 module "iam" {
   source = "../../modules/iam"
 
-  name   = local.service_name
+  name = local.service_name
 }

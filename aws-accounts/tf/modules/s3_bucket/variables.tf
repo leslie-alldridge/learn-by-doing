@@ -16,7 +16,7 @@ variable "region" {
 }
 
 variable "versioning" {
-  type        = bool
-  description = "Bucket versioning"
-  default     = false
+  type        = string
+  description = "Bucket versioning Disabled/Enabled"
+  default     = "Disabled"
 }
