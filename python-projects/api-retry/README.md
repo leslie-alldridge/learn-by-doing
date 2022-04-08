@@ -1,0 +1,1 @@
+Retry logic can be messy in Python and difficult to test. I want to find a good way to do this without editing in flight requests or diving into the depths of urllib3.

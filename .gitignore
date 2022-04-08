@@ -1,3 +1,8 @@
+# Terraform
 .terraform
 *.tfstate*
 plan
+
+# Python
+__pycache__
+env/
