@@ -1,0 +1,12 @@
+# Choose your desired ubuntu version instead of :latest
+FROM ubuntu:latest
+RUN apt-get update
+# Install docker + other packages to get terraform setup
+RUN apt install docker.io gnupg curl software-properties-common -y
+# Setup terraform
+RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
+RUN apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+RUN apt update
+RUN apt install terraform
+# Run the container
+CMD [ "bash" ]

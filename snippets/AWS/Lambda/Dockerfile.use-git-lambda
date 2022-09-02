@@ -1,0 +1,13 @@
+# Install git so we can use it within lambda
+RUN yum update -y && \
+    yum install -y git && \
+    rm -Rf /var/cache/yum
+
+# Git configuration
+RUN git config --system user.email "test@test.com"
+RUN git config --system user.name "test-username"
+
+# Then in your python code you can do
+
+p1 = subprocess.Popen([f'git checkout -b {git_branch}'], stderr=sys.stderr, stdout=subprocess.PIPE, cwd=f"{current_dir}/", shell=True)
+p1.wait()
